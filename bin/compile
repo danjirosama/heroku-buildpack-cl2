@@ -11,6 +11,7 @@ function indent() {
 
 # parse and derive params
 BUILDPACK_DIR=$(cd $(dirname $0); cd ..; pwd) # absolute path of buildpack
+SBCL_VERSION="1.2.16"
 BUILD_DIR=$1
 CACHE_DIR=$2
 
@@ -21,12 +22,12 @@ if [ $RESET_CACHE ]; then
   rm -rf $CACHE_DIR/*
 fi
 
-if [ ! -d "$CACHE_DIR/sbcl/sbcl-1.0.54-x86-64-linux" ]; then
-    echo "-----> Fetching sbcl"    
-    SBCL_PACKAGE="http://sbcl-heroku.s3.amazonaws.com/sbcl-1.0.54-x86-64-linux-binary.tar.bz2"
-    mkdir -p "$CACHE_DIR/sbcl" && curl $SBCL_PACKAGE -s -o -  | tar xjf - -C "$CACHE_DIR/sbcl"
-    chmod +x "$CACHE_DIR/sbcl/sbcl-1.0.54-x86-64-linux/run-sbcl.sh"
+if [ ! -d "$CACHE_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux" ]; then
+    SBCL_PACKAGE="$BUILDPACK_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux-binary.tar.bz2"
+    mkdir -p "$CACHE_DIR/sbcl" && tar xjf $SBCL_PACKAGE -C "$CACHE_DIR/sbcl"
+    chmod +x "$CACHE_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh"
 fi
+
 # add to slug 
 cp -r "$CACHE_DIR/sbcl" $BUILD_DIR
 echo "sbcl installed" | indent
@@ -38,5 +39,5 @@ export CACHE_DIR
 export BUILD_DIR
 
 echo "-----> Starting build"
-$BUILD_DIR/sbcl/sbcl-1.0.54-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/bin/compile.lisp" --eval "(sb-ext:quit)"
+$BUILD_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/bin/compile.lisp" --eval "(sb-ext:quit)"
 echo "-----> Build finished"
