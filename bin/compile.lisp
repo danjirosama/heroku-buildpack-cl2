@@ -8,7 +8,7 @@
 (defvar *buildpack-dir* (pathname (concatenate 'string (uiop:getenv "BUILDPACK_DIR") "/")))
 
 (defun heroku-setup-cache ()
-  (setf (uiop:getenv "XDG_CACHE_HOME") *asdf-dir*))
+  (setf (uiop:getenv "XDG_CACHE_HOME") (format nil "~a" *asdf-dir*)))
 
 (defmacro fncall (funname &rest args)
   `(funcall (read-from-string ,funname) ,@args))
