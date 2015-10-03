@@ -7,7 +7,7 @@
 (defvar *buildpack-dir* (pathname (concatenate 'string (uiop:getenv "BUILDPACK_DIR") "/")))
 
 (defun heroku-setup-cache ()
-  (setf uiop:*user-cache* *build-dir))
+  (setf uiop:*user-cache* *build-dir*))
 
 (defmacro fncall (funname &rest args)
   `(funcall (read-from-string ,funname) ,@args))
