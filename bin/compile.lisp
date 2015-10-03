@@ -2,9 +2,9 @@
 
 (require :asdf)
 
-(defvar *build-dir* (pathname (concatenate 'string (asdf::getenv "BUILD_DIR") "/")))
-(defvar *cache-dir* (pathname (concatenate 'string (asdf::getenv "CACHE_DIR") "/")))
-(defvar *buildpack-dir* (pathname (concatenate 'string (asdf::getenv "BUILDPACK_DIR") "/")))
+(defvar *build-dir* (pathname (concatenate 'string (uiop:getenv "BUILD_DIR") "/")))
+(defvar *cache-dir* (pathname (concatenate 'string (uiop:getenv "CACHE_DIR") "/")))
+(defvar *buildpack-dir* (pathname (concatenate 'string (uiop:getenv "BUILDPACK_DIR") "/")))
 
 (defmacro fncall (funname &rest args)
   `(funcall (read-from-string ,funname) ,@args))
