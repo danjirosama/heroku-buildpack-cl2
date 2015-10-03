@@ -24,22 +24,12 @@
                       version)
               :replace t :prompt nil))))
 
-;;; stacktrace printing, copy/pasted from the ql-test by Fare:
-;;; ssh://common-lisp.net/home/frideau/git/ql-test.git
-#-sbcl
-(defun print-backtrace (out)
-  "Print a backtrace (implementation-defined)"
-  (declare (ignorable out))
-  #+clozure (let ((*debug-io* out))
-	      (ccl:print-call-history :count 100 :start-frame-number 1)
-	      (finish-output out)))
-
 (defun call-with-ql-test-context (thunk)
   (block nil
     (handler-bind (((or error serious-condition)
                      (lambda (c)
                        (format *error-output* "~%~A~%" c)
-                       (print-backtrace *error-output*)
+                       (print-backtrace)
                        (format *error-output* "~%~A~%" c)
                        (return nil))))
       (funcall thunk))))
