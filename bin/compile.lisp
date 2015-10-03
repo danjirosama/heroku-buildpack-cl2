@@ -6,8 +6,8 @@
 (defvar *cache-dir* (pathname (concatenate 'string (uiop:getenv "CACHE_DIR") "/")))
 (defvar *buildpack-dir* (pathname (concatenate 'string (uiop:getenv "BUILDPACK_DIR") "/")))
 
-(defun heroku-setenv ()
-  (uiop:setenv "XDG_CACHE_HOME" (concatenate 'string (uiop:getenv "CACHE_DIR") "/.asdf/")))
+(defun heroku-setup-cache ()
+  (setf uiop:*user-cache* (concatenate 'string (uiop:getenv "CACHE_DIR") "/.asdf/")))
 
 (defmacro fncall (funname &rest args)
   `(funcall (read-from-string ,funname) ,@args))
@@ -42,5 +42,5 @@
 
 ;;; Load the application compile script
 (with-ql-test-context ()
-  (heroku-setenv)
+  (heroku-setup-cache)
   (load (merge-pathnames "heroku-compile.lisp" *build-dir*)))
