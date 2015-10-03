@@ -3,5 +3,5 @@
 cat << EOF
 ---
 config_vars:
-  PATH: /usr/bin:/bin
+  PATH: /usr/bin:/bin:/app/sbcl
 EOF
