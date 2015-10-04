@@ -30,7 +30,11 @@ fi
 
 # add to slug 
 cp -r  "$CACHE_DIR/sbcl" $BUILD_DIR
-ln -sf "$BUILD_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh" "$BUILD_DIR/sbcl/sbcl"
+# create a symlink in /app/sbcl/sbcl
+pushd "$BUILD_DIR/sbcl/"
+ln -sf "sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh" "sbcl"
+chmod +x sbcl
+popd
 echo "sbcl installed" | indent
 
 # setting up paths for building
