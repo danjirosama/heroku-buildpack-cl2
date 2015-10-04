@@ -12,7 +12,7 @@
 
 (defun require-quicklisp (&key version)
   "VERSION if specified must be in format YYYY-MM-DD"
-  (let ((ql-setup (merge-pathnames "quicklisp/setup.lisp" *build-dir*)))
+  (let ((ql-setup (merge-pathnames "quicklisp/setup.lisp" *cache-dir*)))
     (if (probe-file ql-setup)
         (load ql-setup)
         (progn
