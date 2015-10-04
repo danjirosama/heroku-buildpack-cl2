@@ -29,7 +29,8 @@ if [ ! -d "$CACHE_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux" ]; then
 fi
 
 # add to slug 
-cp -r "$CACHE_DIR/sbcl" $BUILD_DIR
+cp -r  "$CACHE_DIR/sbcl" $BUILD_DIR
+ln -sf "$BUILD_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh" "$BUILD_DIR/sbcl/sbcl"
 echo "sbcl installed" | indent
 
 # setting up paths for building
@@ -39,6 +40,9 @@ export CACHE_DIR
 export BUILD_DIR
 
 echo "-----> Starting build"
-$BUILD_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/bin/compile.lisp" --eval "(sb-ext:quit)"
+# compile the system
+$BUILD_DIR/sbcl/sbcl --load "$BUILDPACK_DIR/bin/compile.lisp" --eval "(sb-ext:quit)"
+# copy the quicklisp data from cache to build
+echo "Copying quicklisp data..." | indent
 cp -r --preserve=all ${CACHE_DIR}/quicklisp ${BUILD_DIR}
 echo "-----> Build finished"

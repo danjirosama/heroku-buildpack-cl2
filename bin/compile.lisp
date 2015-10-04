@@ -4,7 +4,6 @@
 
 (defvar *build-dir* (pathname (concatenate 'string (uiop:getenv "BUILD_DIR") "/")))
 (defvar *cache-dir* (pathname (concatenate 'string (uiop:getenv "CACHE_DIR") "/")))
-(defvar *asdf-dir*  (pathname (concatenate 'string (uiop:getenv "CACHE_DIR") "/asdf/")))
 (defvar *buildpack-dir* (pathname (concatenate 'string (uiop:getenv "BUILDPACK_DIR") "/")))
 
 (defmacro fncall (funname &rest args)
