@@ -14,8 +14,10 @@
   "VERSION if specified must be in format YYYY-MM-DD"
   (let ((ql-setup (merge-pathnames "quicklisp/setup.lisp" *cache-dir*)))
     (if (probe-file ql-setup)
-        (load ql-setup)
+        (progn (format t "Quicklisp already installed...~%Loading.....~%") 
+               (load ql-setup))
         (progn
+          (format t "Quicklisp not detected...~%Installing Quicklisp....~%")
           (load (merge-pathnames "bin/quicklisp.lisp" *buildpack-dir*))
           (fncall "quicklisp-quickstart:install"
                    :path (make-pathname :directory (pathname-directory ql-setup)))))
