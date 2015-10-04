@@ -1,6 +1,8 @@
 (in-package :cl-user)
 
 (require :asdf)
+(asdf:disable-output-translations)
+(setf sb-impl::*default-external-format* :utf8)
 
 (defvar *build-dir* (pathname (concatenate 'string (uiop:getenv "BUILD_DIR") "/")))
 (defvar *cache-dir* (pathname (concatenate 'string (uiop:getenv "CACHE_DIR") "/")))
