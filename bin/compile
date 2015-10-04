@@ -38,12 +38,11 @@ echo "sbcl installed" | indent
 export BUILDPACK_DIR
 export CACHE_DIR
 export BUILD_DIR
-export XDG_CACHE_HOME=${ASDF_DIR}
+#export XDG_CACHE_HOME=${ASDF_DIR}
 
 echo "-----> Starting build"
 #rm -rf ${BUILD_DIR}/quicklisp
-ls -a
-find ${CACHE_DIR} -name '*.fasl'
 $BUILD_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/bin/compile.lisp" --eval "(sb-ext:quit)"
+rm -rf $BUILD_DIR/quicklisp/quicklisp/*.fasl
 cp -r --preserve=all -v  ${CACHE_DIR}/quicklisp ${BUILD_DIR}
 echo "-----> Build finished"
