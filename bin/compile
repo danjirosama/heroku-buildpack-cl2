@@ -14,7 +14,6 @@ BUILDPACK_DIR=$(cd $(dirname $0); cd ..; pwd) # absolute path of buildpack
 SBCL_VERSION="1.2.16"
 BUILD_DIR=$1
 CACHE_DIR=$2
-ASDF_DIR="${BUILD_DIR}/asdf/"
 
 echo "-----> compile params: $BUILD_DIR $CACHE_DIR"
 
@@ -38,10 +37,8 @@ echo "sbcl installed" | indent
 export BUILDPACK_DIR
 export CACHE_DIR
 export BUILD_DIR
-export XDG_CACHE_HOME=${ASDF_DIR}
 
 echo "-----> Starting build"
-#rm -rf ${BUILD_DIR}/quicklisp
 $BUILD_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/bin/compile.lisp" --eval "(sb-ext:quit)"
-cp -r --preserve=all -v  ${CACHE_DIR}/quicklisp ${BUILD_DIR}
+cp -r --preserve=all ${CACHE_DIR}/quicklisp ${BUILD_DIR}
 echo "-----> Build finished"
