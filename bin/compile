@@ -1,52 +1,63 @@
 #!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir>
+# bin/compile <build-dir> <cache-dir> <env-dir>
 
-function indent() {
-  c='s/^/       /'
-  case $(uname) in
-    Darwin) sed -l "$c";;
-    *)      sed -u "$c";;
-  esac
+# fail fast
+set -e
+
+# parse args
+export BUILD_DIR=$1
+export CACHE_DIR=$2
+export ENV_DIR=$3
+export BUILDPACK_DIR=$(cd $(dirname $0); cd ..; pwd) # absolute path of buildpack
+SBCL_VERSION="1.2.16"
+
+# Load config vars into environment
+export_env_dir() {
+  env_dir=$3
+  whitelist_regex=${2:-''}
+  blacklist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+  if [ -d "$env_dir" ]; then
+    for e in $(ls $env_dir); do
+      echo "$e" | grep -E "$whitelist_regex" | grep -qvE "$blacklist_regex" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
 }
 
-# parse and derive params
-BUILDPACK_DIR=$(cd $(dirname $0); cd ..; pwd) # absolute path of buildpack
-SBCL_VERSION="1.2.16"
-BUILD_DIR=$1
-CACHE_DIR=$2
+export_env_dir $ENV_DIR
 
-echo "-----> compile params: $BUILD_DIR $CACHE_DIR"
-
-if [ $RESET_CACHE ]; then
-  echo "-----> flushing cache"
-  rm -rf $CACHE_DIR/*
-fi
+echo "-----> Compile params: $BUILD_DIR $CACHE_DIR $ENV_DIR"
 
 if [ ! -d "$CACHE_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux" ]; then
+    echo "-----> unpackaging sbcl"
     SBCL_PACKAGE="$BUILDPACK_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux-binary.tar.bz2"
     mkdir -p "$CACHE_DIR/sbcl" && tar xjf $SBCL_PACKAGE -C "$CACHE_DIR/sbcl"
     chmod +x "$CACHE_DIR/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh"
 fi
 
-# add to slug 
+echo "-----> Installing sbcl"
+# add sbcl to slug 
 cp -r  "$CACHE_DIR/sbcl" $BUILD_DIR
 # create a symlink in /app/sbcl/sbcl
 pushd "$BUILD_DIR/sbcl/"
 ln -sf "sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh" "sbcl"
 chmod +x sbcl
 popd
-echo "sbcl installed" | indent
 
-# setting up paths for building
+echo "-----> Updating sbcl profile.d script"
+# populate profile.d
+PROFILE_PATH="$BUILD_DIR/.profile.d/sbcl.sh"
+mkdir -p $(dirname $PROFILE_PATH)
+echo 'export PATH="$HOME/sbcl/:$PATH"' >> $PROFILE_PATH
+echo 'export LANG="en_US.UTF-8"' >> $PROFILE_PATH
 
-export BUILDPACK_DIR
-export CACHE_DIR
-export BUILD_DIR
-
-echo "-----> Starting build"
+echo "-----> Starting lisp compilation"
 # compile the system
-$BUILD_DIR/sbcl/sbcl --load "$BUILDPACK_DIR/bin/compile.lisp" --eval "(sb-ext:quit)"
+sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)"
+
 # copy the quicklisp data from cache to build
-echo "Copying quicklisp data..." | indent
+echo "-----> Copying quicklisp data..."
 cp -r --preserve=all ${CACHE_DIR}/quicklisp ${BUILD_DIR}
+
 echo "-----> Build finished"
