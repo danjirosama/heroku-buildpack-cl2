@@ -44,7 +44,7 @@ pushd "$BUILD_DIR/sbcl/"
 ln -sf "sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh" "sbcl"
 chmod +x sbcl
 # copy .sbclrc
-cp "${BUILDPACK_DIR}/list/.sbclrc" "${BUILD_DIR}/"
+cp "${BUILDPACK_DIR}/lisp/.sbclrc" "${BUILD_DIR}/"
 popd
 
 echo "-----> Updating sbcl profile.d script"
