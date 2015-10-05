@@ -69,11 +69,11 @@ fi
 
 echo "-----> Starting lisp compilation"
 # compile the system
-${BUILD_DIR}/sbcl/sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
+${CACHE_DIR}/sbcl/sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
 
 # copy the quicklisp data from build to cache
 echo "-----> Caching quicklisp data for future builds..."
-#cp -r --preserve=all ${BUILD_DIR}/quicklisp ${CACHE_DIR}
+cp -r --preserve=all ${BUILD_DIR}/quicklisp ${CACHE_DIR}
 
 echo "-----> Setting up .sbclrc"
 cp "${BUILDPACK_DIR}/lisp/.sbclrc" "${BUILD_DIR}/"
