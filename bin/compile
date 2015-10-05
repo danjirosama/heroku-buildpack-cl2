@@ -11,6 +11,14 @@ export ENV_DIR=$3
 export BUILDPACK_DIR=$(cd $(dirname $0); cd ..; pwd) # absolute path of buildpack
 SBCL_VERSION="1.2.16"
 
+indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+  
 # Load config vars into environment
 export_env_dir() {
   env_dir=$3
@@ -56,7 +64,7 @@ echo 'export LANG="en_US.UTF-8"' >> $PROFILE_PATH
 
 echo "-----> Starting lisp compilation"
 # compile the system
-${BUILD_DIR}/sbcl/sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)"
+${CACHE_DIR}/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
 
 # copy the quicklisp data from cache to build
 echo "-----> Copying quicklisp data..."
