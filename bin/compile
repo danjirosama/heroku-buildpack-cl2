@@ -51,11 +51,10 @@ PROFILE_PATH="$BUILD_DIR/.profile.d/sbcl.sh"
 mkdir -p $(dirname $PROFILE_PATH)
 echo 'export PATH="$HOME/sbcl/:$PATH"' >> $PROFILE_PATH
 echo 'export LANG="en_US.UTF-8"' >> $PROFILE_PATH
-source $PROFILE_PATH
 
 echo "-----> Starting lisp compilation"
 # compile the system
-sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)"
+${HOME}/sbcl/sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)"
 
 # copy the quicklisp data from cache to build
 echo "-----> Copying quicklisp data..."
