@@ -75,6 +75,9 @@ ${CACHE_DIR}/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPA
 echo "-----> Caching quicklisp data for future builds..."
 cp -r --preserve=all ${BUILD_DIR}/quicklisp ${CACHE_DIR}
 
+echo "-----> Patching fasl"
+find ${BUILD_DIR}/quicklisp/ -name '*.fasl' | xargs sed -i "1 s;${CACHE_DIR};${BUILD_DIR};"
+
 echo "-----> Setting up .sbclrc"
 cp "${BUILDPACK_DIR}/lisp/.sbclrc" "${BUILD_DIR}/"
 
