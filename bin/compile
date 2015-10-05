@@ -54,7 +54,7 @@ echo 'export LANG="en_US.UTF-8"' >> $PROFILE_PATH
 
 echo "-----> Starting lisp compilation"
 # compile the system
-${HOME}/sbcl/sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)"
+${BUILD_DIR}/sbcl/sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)"
 
 # copy the quicklisp data from cache to build
 echo "-----> Copying quicklisp data..."
