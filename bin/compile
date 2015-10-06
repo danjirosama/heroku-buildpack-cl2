@@ -75,6 +75,9 @@ ${CACHE_DIR}/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPA
 echo "-----> Caching quicklisp data for future builds..."
 cp -r --preserve=all ${BUILD_DIR}/quicklisp ${CACHE_DIR}
 
+# Ok, I don't want to do this, but if the sbcl path in the shebang
+# differs from the one running, fasl recompilation is triggered.
+# Looking for better alternatives :(
 echo "-----> Patching fasl"
 find ${BUILD_DIR}/quicklisp/ -name '*.fasl' | xargs sed -i "1 s;${CACHE_DIR};${BUILD_DIR};"
 
