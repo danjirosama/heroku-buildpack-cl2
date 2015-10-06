@@ -60,21 +60,18 @@ mkdir -p $(dirname $PROFILE_PATH)
 echo 'export PATH="$HOME/sbcl/:$PATH"' >> $PROFILE_PATH
 echo 'export LANG="en_US.UTF-8"' >> $PROFILE_PATH
 
+if [ - ${CACHE_DIR}/quicklisp]; then
+    echo "-----> Copying quicklisp data to the build dir..."
+    cp -r --preserve=all ${CACHE_DIR}/quicklisp ${BUILD_DIR}
+fi
 
 # compile the system
-cp -r  "$CACHE_DIR/sbcl" "/tmp/"
 echo "-----> Starting lisp compilation"
-/tmp/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
-#${CACHE_DIR}/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
+$BUILD_DIR/sbcl/sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
 
-echo "-----> Copying quicklisp data to the build dir..."
-cp -r --preserve=all ${CACHE_DIR}/quicklisp ${BUILD_DIR}
-
-# Ok, I don't want to do this, but if the sbcl path in the shebang
-# differs from the one running, fasl recompilation is triggered.
-# Looking for better alternatives :(
-#echo "-----> Patching fasl"
-#find ${BUILD_DIR}/quicklisp/ -name '*.fasl' | xargs sed -i "1 s;^.*$;#\!${HOME}/sbcl/sbcl --script;"
+echo "-----> Caching quicklisp data to future builds..."
+rm -rf ${CACHE_DIR}/quicklisp
+cp -r --preserve=all ${BUILD_DIR}/quicklisp ${CACHE_DIR}
 
 echo "-----> Setting up .sbclrc"
 cp "${BUILDPACK_DIR}/lisp/.sbclrc" "${BUILD_DIR}/"
