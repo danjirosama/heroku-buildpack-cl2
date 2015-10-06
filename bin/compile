@@ -60,20 +60,13 @@ mkdir -p $(dirname $PROFILE_PATH)
 echo 'export PATH="$HOME/sbcl/:$PATH"' >> $PROFILE_PATH
 echo 'export LANG="en_US.UTF-8"' >> $PROFILE_PATH
 
-# Use previous quicklisp installation as cache IN the build dir
-if [ -d "${CACHE_DIR}/quicklisp" ]; then
-    echo "-----> Restoring quicklisp cache"
-    rm -rf ${BUILD_DIR}/quicklisp
-    mv ${CACHE_DIR}/quicklisp ${BUILD_DIR}
-fi
-
-echo "-----> Starting lisp compilation"
 # compile the system
+echo "-----> Starting lisp compilation"
 ${CACHE_DIR}/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
 
 # copy the quicklisp data from build to cache
 echo "-----> Caching quicklisp data for future builds..."
-cp -r --preserve=all ${BUILD_DIR}/quicklisp ${CACHE_DIR}
+cp -r --preserve=all ${CACHE_DIR}/quicklisp ${BUILD_DIR}
 
 echo "-----> Patching fasl"
 find ${BUILD_DIR}/quicklisp/ -name '*.fasl' | xargs sed -i "1 s;${CACHE_DIR};${BUILD_DIR};"
