@@ -47,6 +47,8 @@ fi
 echo "-----> Installing sbcl"
 # add sbcl to slug
 cp -r  "$CACHE_DIR/sbcl" $BUILD_DIR
+# build will be run from tmp
+cp -r  "$CACHE_DIR/sbcl" /tmp/
 # create a symlink in /app/sbcl/sbcl
 pushd "$BUILD_DIR/sbcl/"
 ln -sf "sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh" "sbcl"
@@ -67,7 +69,7 @@ fi
 
 # compile the system
 echo "-----> Starting lisp compilation"
-$BUILD_DIR/sbcl/sbcl --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
+/tmp/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
 
 echo "-----> Caching quicklisp data to future builds..."
 rm -rf ${CACHE_DIR}/quicklisp
