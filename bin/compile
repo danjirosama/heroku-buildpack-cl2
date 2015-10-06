@@ -60,7 +60,7 @@ mkdir -p $(dirname $PROFILE_PATH)
 echo 'export PATH="$HOME/sbcl/:$PATH"' >> $PROFILE_PATH
 echo 'export LANG="en_US.UTF-8"' >> $PROFILE_PATH
 
-if [ - ${CACHE_DIR}/quicklisp]; then
+if [ -d ${CACHE_DIR}/quicklisp ]; then
     echo "-----> Copying quicklisp data to the build dir..."
     cp -r --preserve=all ${CACHE_DIR}/quicklisp ${BUILD_DIR}
 fi
