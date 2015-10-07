@@ -47,8 +47,6 @@ fi
 echo "-----> Installing sbcl"
 # add sbcl to slug
 cp -r  "$CACHE_DIR/sbcl" $BUILD_DIR
-# build will be run from tmp
-cp -r  "$CACHE_DIR/sbcl" /tmp/
 # create a symlink in /app/sbcl/sbcl
 pushd "$BUILD_DIR/sbcl/" > /dev/null
 ln -sf "sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh" "sbcl"
@@ -62,23 +60,12 @@ mkdir -p $(dirname $PROFILE_PATH)
 echo 'export PATH="$HOME/sbcl/:$PATH"' >> $PROFILE_PATH
 echo 'export LANG="en_US.UTF-8"' >> $PROFILE_PATH
 
-# restore cache
-if [ -d "${CACHE_DIR}/quicklisp" ]; then
-    echo "-----> Copying quicklisp data to the temporary build dir..."
-    cp -r --preserve=all ${CACHE_DIR}/quicklisp /tmp/
-fi
-
 # compile the system
 echo "-----> Starting lisp compilation"
-/tmp/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
-
+"${BUILD_DIR}/sbcl/sbcl-${SBCL_VERSION}-x86-64-linux/run-sbcl.sh" --load "$BUILDPACK_DIR/lisp/compile.lisp" --eval "(sb-ext:quit)" | indent
 
 echo "-----> Copying quicklisp data to the build dir..."
-cp -r --preserve=all /tmp/quicklisp ${BUILD_DIR}
-
-echo "-----> Caching quicklisp data for future builds..."
-rm -rf ${CACHE_DIR}/quicklisp
-cp -r --preserve=all ${BUILD_DIR}/quicklisp ${CACHE_DIR}
+cp -rf  "${CACHE_DIR}/quicklisp" "${BUILD_DIR}"
 
 echo "-----> Setting up .sbclrc"
 cp "${BUILDPACK_DIR}/lisp/.sbclrc" "${BUILD_DIR}/"

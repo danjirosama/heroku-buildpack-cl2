@@ -11,7 +11,7 @@
 
 (defun require-quicklisp ()
   "Loads quicklisp."
-  (let ((ql-setup (merge-pathnames "quicklisp/setup.lisp" "/tmp/")))
+  (let ((ql-setup (merge-pathnames "quicklisp/setup.lisp" *cache-dir*)))
     (if (probe-file ql-setup)
         (progn (format t "Quicklisp already installed...~%Loading.....~%")
                (load ql-setup))
